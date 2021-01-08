@@ -9,6 +9,7 @@ class App {
 
   init() {
     document.addEventListener("DOMContentLoaded", () => {
+      console.log(this.tag, "init()");
       this.MainController.init();
     });
   }
