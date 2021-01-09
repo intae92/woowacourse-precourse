@@ -35,6 +35,7 @@ export default class MainController {
     }
 
     console.log(result);
+    console.log(this.getTotalDistanceAndTime([...result]));
   }
 
   onClickRadio(radio) {
@@ -70,6 +71,38 @@ export default class MainController {
         section_info[option]
       );
     });
+  }
+
+  getEdge(start, end) {
+    const section = sections.find((section_info) => {
+      const sectionStations = section_info["section_stations"];
+
+      if (
+        (sectionStations[0] === start && sectionStations[1] === end) ||
+        (sectionStations[1] === start && sectionStations[0] === end)
+      ) {
+        return {
+          distance: sectionStations.distance || 0,
+          time: sectionStations.time || 0,
+        };
+      }
+    });
+
+    return { ...section };
+  }
+
+  getTotalDistanceAndTime(result) {
+    let totalDistance = 0;
+    let totalTime = 0;
+
+    while (result.length > 1) {
+      const getEdgeDistanceAndTime = this.getEdge(result[0], result[1]);
+      totalDistance += getEdgeDistanceAndTime.distance;
+      totalTime += getEdgeDistanceAndTime.time;
+      result.shift();
+    }
+
+    return { totalDistance, totalTime };
   }
 
   isValidInput(departure, arrival) {
