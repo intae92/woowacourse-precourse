@@ -23,10 +23,18 @@ export default class MainController {
     console.log(this.tag, "onSubmit()", input_info);
 
     const { departure, arrival, option } = input_info;
+    this.addEdgeSections(option);
 
     if (!this.isValidInput(departure, arrival)) {
       return;
     }
+
+    let result = this.Dijkstra.findShortestPath(departure, arrival);
+    if (!this.isConnection(result)) {
+      return;
+    }
+
+    console.log(result);
   }
 
   onClickRadio(radio) {
@@ -52,6 +60,16 @@ export default class MainController {
     }
 
     throw radioIDError;
+  }
+
+  addEdgeSections(option) {
+    sections.forEach((section_info) => {
+      this.Dijkstra.addEdge(
+        section_info.section_stations[0],
+        section_info.section_stations[1],
+        section_info[option]
+      );
+    });
   }
 
   isValidInput(departure, arrival) {
@@ -89,6 +107,15 @@ export default class MainController {
     }
 
     alert("같은 이름");
+    return false;
+  }
+
+  isConnection(result) {
+    if (result !== undefined) {
+      return true;
+    }
+
+    window.alert("연결되어 있지 않습니다.");
     return false;
   }
 }
