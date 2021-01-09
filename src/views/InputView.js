@@ -10,6 +10,7 @@ export default class InputView extends View {
   setup(el) {
     this.init(el);
     this.el.innerHTML = this.render();
+    this.bindEvents();
     return this;
   }
 
@@ -89,5 +90,35 @@ export default class InputView extends View {
       <button id=${DOM_ID.SEARCH_BUTTON_ID}>길 찾기</button>
     </div>
     `;
+  }
+
+  bindEvents() {
+    this.on("submit", (e) => this.onSubmit(e));
+    this.on("click", (e) => this.onClick(e));
+  }
+
+  onClick(e) {
+    if (e.target.name === DOM_ID.SEARCH_TYPE_NAME) {
+      const radio = e.target;
+      this.emit("@clickRadio", { radio });
+    }
+  }
+
+  onSubmit(e) {
+    e.preventDefault();
+
+    const input_info = {
+      departure: e.target[0].value,
+      arrival: e.target[1].value,
+      option: e.target[2].getAttribute("checked") ? "distance" : "time",
+    };
+
+    this.emit("@submit", { input_info });
+  }
+
+  changeRadio(changeRado_info) {
+    console.log(this.tag, "changeRadio()", changeRado_info);
+    changeRado_info.checkedRadio.setAttribute("checked", "checked");
+    changeRado_info.unCheckedRadio.removeAttribute("checked");
   }
 }
