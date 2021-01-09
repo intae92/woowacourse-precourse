@@ -1,11 +1,14 @@
 import InputView from "../views/InputView.js";
 import { DOM_ID } from "../utils/variables.js";
+import Dijkstra from "../utils/Dijkstra.js";
+import { stations, lines, sections } from "../models/data.js";
 
 export default class MainController {
   constructor() {
     this.tag = "[MainController]";
     this._app = document.getElementById("app");
     this.InputView = new InputView();
+    this.Dijkstra = new Dijkstra();
   }
 
   init() {
@@ -18,6 +21,12 @@ export default class MainController {
 
   onSubmit(input_info) {
     console.log(this.tag, "onSubmit()", input_info);
+
+    const { departure, arrival, option } = input_info;
+
+    if (!this.isValidInput(departure, arrival)) {
+      return;
+    }
   }
 
   onClickRadio(radio) {
@@ -43,5 +52,43 @@ export default class MainController {
     }
 
     throw radioIDError;
+  }
+
+  isValidInput(departure, arrival) {
+    if (
+      this.isEmpty(departure, arrival) &&
+      this.isCorrectStationName(departure, arrival) &&
+      this.isSameStationName(departure, arrival)
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  isEmpty(departure, arrival) {
+    if (departure === "" && arrival === "") {
+      alert("역 이름을 입력해주세요");
+      return false;
+    }
+    return true;
+  }
+
+  isCorrectStationName(departure, arrival) {
+    if (stations.includes(departure) && stations.includes(arrival)) {
+      return true;
+    }
+
+    alert("존재하지 않는 역 입니다.");
+    return false;
+  }
+
+  isSameStationName(departure, arrival) {
+    if (departure !== arrival) {
+      return true;
+    }
+
+    alert("같은 이름");
+    return false;
   }
 }
