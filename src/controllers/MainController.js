@@ -1,6 +1,7 @@
 import InputView from "../views/InputView.js";
-import { DOM_ID } from "../utils/variables.js";
 import Dijkstra from "../utils/Dijkstra.js";
+import ResultView from "../views/ResultView.js";
+import { DOM_ID } from "../utils/variables.js";
 import { stations, lines, sections } from "../models/data.js";
 
 export default class MainController {
@@ -9,6 +10,7 @@ export default class MainController {
     this._app = document.getElementById("app");
     this.InputView = new InputView();
     this.Dijkstra = new Dijkstra();
+    this.ResultView = new ResultView();
   }
 
   init() {
@@ -17,6 +19,8 @@ export default class MainController {
     this.InputView.setup(this._app)
       .on("@submit", (e) => this.onSubmit(e.detail.input_info))
       .on("@clickRadio", (e) => this.onClickRadio(e.detail.radio));
+
+    this.ResultView.setup(this._app);
   }
 
   onSubmit(input_info) {
@@ -34,8 +38,11 @@ export default class MainController {
       return;
     }
 
-    console.log(result);
-    console.log(this.getTotalDistanceAndTime([...result]));
+    this.ResultView.render({
+      result: result.join(" ▶︎ "),
+      option: option === "distance" ? "최단거리" : "최소시간",
+      ...this.getTotalDistanceAndTime([...result]),
+    });
   }
 
   onClickRadio(radio) {
